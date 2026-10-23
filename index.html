@@ -6,8 +6,8 @@
 <meta name="twitter:card" content="player"><meta name="twitter:title" content="SlitherClue 🐍 — Daily Puzzle">
 <meta name="twitter:description" content="Snake + maze + word search + crossword. Eat letters, spell the answers, fill the grid.">
 <meta name="twitter:image" content="https://rloechner.github.io/slitherclue/og.png"><meta name="twitter:player" content="https://rloechner.github.io/slitherclue/">
-<meta name="twitter:player:width" content="500"><meta name="twitter:player:height" content="700">
-<meta name="build" content="slitherclue-v2-prefix">
+<meta name="twitter:player:width" content="500"><meta name="twitter:player:height" content="500">
+<meta name="build" content="slitherclue-v3-embed">
 <title>SlitherClue</title>
 <style>select{background:#3a4680;color:#e9ecff;border:0;border-radius:6px;padding:4px 6px;font-size:13px}
 *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(circle at 30% 20%,#23305a,#0e1224);color:#e9ecff;min-height:100vh;display:flex;flex-direction:column;align-items:center}
@@ -26,13 +26,35 @@ button.alt{background:#3a4680;color:#e9ecff}.hidden{display:none}
 #pad{display:none;grid-template-columns:repeat(3,56px);gap:6px;margin:12px auto}#pad button{padding:14px 0;margin:0}
 @media (pointer:coarse){#pad{display:grid}}
 @media (max-width:620px){body{overflow-x:hidden}canvas{width:min(94vw,calc(56vh*17/13))}h1{margin:6px 0 2px;font-size:22px}#hud{gap:8px;font-size:13px;flex-wrap:wrap;justify-content:center}#main{gap:10px}#side{min-width:0;width:94vw;padding:10px}.c{width:28px;height:28px;font-size:15px}.ov p{font-size:13px;margin:6px 0}.ov h2{margin:4px 0}.ov{padding:10px}button{padding:8px 14px;font-size:14px}}
-.stats{font-size:13px;opacity:.8;margin-top:6px}</style></head><body>
+.stats{font-size:13px;opacity:.8;margin-top:6px}
+.ex{display:none!important}html.embed .ex{display:inline-block!important}html.embed #side:not(.open) .full{display:none!important}
+html.embed body{height:100vh;min-height:0;overflow:hidden;justify-content:center}
+html.embed h1,html.embed #lvl,html.embed #hud label{display:none}
+html.embed #hud{margin:0;padding:3px 6px;gap:10px;font-size:12px;width:100%;height:28px;justify-content:center;align-items:center;white-space:nowrap;flex-wrap:nowrap}
+html.embed #hud button,html.embed #hud a{padding:2px 9px!important;margin:0;font-size:13px!important;border-radius:6px;line-height:20px}
+html.embed #hud a{background:#3a4680;color:#e9ecff;text-decoration:none}
+html.embed #main{flex-direction:column;flex-wrap:nowrap;gap:4px;padding:0;align-items:center;width:100%}
+html.embed canvas{width:min(calc(100vw - 8px),calc((100vh - 76px)*17/13));box-shadow:none;border-radius:8px}
+html.embed #side{width:min(calc(100vw - 8px),calc((100vh - 76px)*17/13));min-width:0;max-width:none;padding:0;background:none;box-shadow:none}
+html.embed #body{margin:0;font-family:system-ui,sans-serif;font-size:12px;padding:3px 7px;height:40px;min-height:0;overflow:hidden;line-height:17px;word-break:normal}
+html.embed #body div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html.embed #side.open{position:fixed;inset:0;z-index:20;width:auto;background:#1a2142;padding:10px;overflow:auto}
+html.embed #side.open #body{height:auto}html.embed #side.open #body div{white-space:normal}
+html.embed #side.open .c{width:26px;height:26px;font-size:14px}html.embed ol{font-size:12px}html.embed li{padding:2px 0}
+html.embed .ov{position:fixed;inset:0;border-radius:0;z-index:10;padding:8px;overflow:auto;justify-content:safe center}
+html.embed .ov h2{margin:2px 0 4px;font-size:22px}html.embed .ov p{font-size:12px;margin:4px 0;line-height:1.35}
+html.embed button{padding:6px 12px;font-size:13px;margin:3px}html.embed .ov label{margin-top:6px!important;font-size:12px!important}
+html.embed .ov select{padding:2px 4px;font-size:12px}
+button.big{font-size:17px!important;padding:12px 24px!important;margin:10px 0 6px!important}
+.lnk{background:none!important;color:#9fb0ff!important;font-size:12px!important;font-weight:600;padding:2px 3px!important;margin:0!important;text-decoration:underline}
+.small{font-size:12px;opacity:.85}
+</style></head><body>
 <h1>Slither<span>Clue</span></h1>
-<div id="hud"><span id="lvl"></span><span>⏱ <b id="time">0:00</b></span><span>Score: <b id="score">0</b></span><label style="font-size:13px">Speed <select class="spd"><option value="400">Slow</option><option value="250">Normal</option><option value="165">Fast</option></select></label><button class="alt" id="pause" style="padding:4px 12px;font-size:13px">Pause</button><button class="alt" id="restart" style="padding:4px 12px;font-size:13px">Restart</button></div>
+<div id="hud"><span id="lvl"></span><span>⏱ <b id="time">0:00</b></span><span>Score: <b id="score">0</b></span><label style="font-size:13px">Speed <select class="spd"><option value="400">Slow</option><option value="250">Normal</option><option value="165">Fast</option></select></label><button class="alt" id="pause" style="padding:4px 12px;font-size:13px">Pause</button><button class="alt ex" id="cluesBtn">🧩 Clues</button><button class="alt" id="restart" style="padding:4px 12px;font-size:13px">Restart</button><a class="ex" href="https://rloechner.github.io/slitherclue/" target="_blank" rel="noopener" title="Open full screen">↗</a></div>
 <div id="main"><div id="wrap"><canvas id="cv" tabindex="0"></canvas>
 <div class="ov" id="ov"><h2 id="ovt">How to play</h2><p id="ovp">Steer the snake with <b>arrow keys / WASD</b> (or swipe).<br>Eat the <b>glowing</b> letters to spell a crossword answer in order (they stick to your body).<br>Wrong letters get spat out (−5). Letters already filled in by crossing words are supplied for you.<br>Finish a word and it locks into the puzzle. Hit a wall or yourself and it's over. Fill the whole crossword to win!</p><div id="ovb"></div><label style="margin-top:10px;font-size:14px">Speed: <select class="spd"><option value="400">Slow</option><option value="250">Normal</option><option value="165">Fast</option></select></label></div></div>
-<div id="side"><b>Crossword</b><div id="cw"></div><ol id="clues"></ol><div style="margin-top:10px;font-size:13px;opacity:.7">Spelling:</div><div id="body"></div>
-<div id="pad"><span></span><button data-d="0,-1">▲</button><span></span><button data-d="-1,0">◀</button><button data-d="0,1">▼</button><button data-d="1,0">▶</button></div></div></div>
+<div id="side"><button class="ex full" id="closeClues" style="margin:0 0 6px">✕ Back to maze</button><b class="full">Crossword</b><div id="cw" class="full"></div><ol id="clues" class="full"></ol><div class="full" style="margin-top:10px;font-size:13px;opacity:.7">Spelling:</div><div id="body"></div>
+<div id="pad" class="full"><span></span><button data-d="0,-1">▲</button><span></span><button data-d="-1,0">◀</button><button data-d="0,1">▼</button><button data-d="1,0">▶</button></div></div></div>
 <script>
 const LEVELS=[
 {name:"Farmyard",words:[{w:"CAT",r:0,c:0,d:"a",clue:"Purring pet"},{w:"COW",r:0,c:0,d:"d",clue:"Gives milk, says moo"},{w:"TEN",r:0,c:2,d:"d",clue:"Number after nine"}],
@@ -51,7 +73,7 @@ function dailyLevel(n){const b=BANK[((n*7)%BANK.length+BANK.length)%BANK.length]
 const DAILY=dailyLevel(DAYNUM);let t0=0,tEnd=0,tick;
 const st=JSON.parse(localStorage.getItem('wsStats')||'{}');function saveSt(){if(location.hash==='#demo')return;localStorage.setItem('wsStats',JSON.stringify(st))}
 function fmt(ms){const s=Math.floor(ms/1000);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
-addEventListener('pointerdown',()=>{window.focus()});
+addEventListener('pointerdown',e=>{window.focus();if(!e.target.closest('select,a'))cv.focus({preventScroll:true})});
 const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),T=36;const $=id=>document.getElementById(id);
 let started=false,speed=+(localStorage.getItem('wsSpeed')||400),L,li=0,snake,dir,ndir,letters,tiles,solved,score=0,timer,state='menu',flash=0,spit=0,spitMsg='';
 const W=17,H=13;cv.width=W*T;cv.height=H*T;
@@ -86,6 +108,7 @@ function buildCW(){let R=0,C=0;L.words.forEach(w=>cells(w).forEach(p=>{R=Math.ma
 function patt(i){const rv=revealed();let k=0;return cells(L.words[i]).map(p=>rv.has(p.r+','+p.c)?`<u>${p.ch}</u>`:(k<letters.length?`<b style="color:#7cf29a">${letters[k++]}</b>`:'_')).join(' ')}
 function ui(){$('score').textContent=score;$('lvl').textContent=L.daily?`🗓 ${L.name}`:`Level ${li+1}/${LEVELS.length}: ${L.name}`;
  const cs=cands(),nx=[...nextSet()];
+ if(EMBED&&!$('side').classList.contains('open')){$('body').innerHTML=`<div>${cs.map(i=>`<b style="color:#ffd166">${L.words[i].n}${L.words[i].d==='a'?'A':'D'}</b> ${L.words[i].clue}: ${patt(i)}`).join(' · ')||'—'}</div><div style="${spitMsg?'color:#ff6b6b':'opacity:.75'}">${spitMsg||`Next: ${nx.join(' / ')||'—'} · tap 🧩 for full crossword`}</div>`;return}
  $('body').innerHTML=(spitMsg?`<div style="color:#ff6b6b">${spitMsg}</div>`:'')+(letters.length&&cs.length===1?'🎯 ':'')+cs.map(i=>`<div>${L.words[i].n} ${L.words[i].d==='a'?'Across':'Down'}: ${patt(i)}</div>`).join('')+`<div style="opacity:.7;font-size:13px">Next: ${nx.join(' / ')||'—'}</div>`}
 function step(){if(!started||state!=='play')return;dir=ndir;const h={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
  if(wall(h.x,h.y)||snake.slice(0,-1).some(s=>s.x===h.x&&s.y===h.y))return end(false);
@@ -123,11 +146,18 @@ function copy(t,btn){const ok=()=>{btn.textContent='Copied! ✓'};
  if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(t).then(ok,()=>fb());else fb();
  function fb(){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');ok()}catch(e){prompt('Copy your result:',t)}a.remove()}}
 const HOWTO=$('ovp').innerHTML;
-function menu(){score=0;load(-1);show('How to play',HOWTO,[[`🗓 Daily #${DAYNUM}`,()=>{score=0;load(-1);go()}],...LEVELS.map((l,i)=>[`Level ${i+1}`,()=>{score=0;load(i);go()}])])}
+function menu(){if(EMBED){score=0;load(-1);
+ show('',`<div class="small">Snake × maze × crossword · new puzzle daily</div><div id="howto" class="hidden" style="text-align:left;max-width:360px">${HOWTO}</div>`,[[`▶ Play Today's Daily #${DAYNUM}`,()=>{score=0;load(-1);go()}]]);
+ $('ovt').innerHTML='Slither<span style="color:#7cf29a">Clue</span>';$('ovb').firstChild.classList.add('big');
+ const row=document.createElement('div');row.className='small';const mk=(t,f)=>{const b=document.createElement('button');b.className='lnk';b.textContent=t;b.onclick=f;row.appendChild(b)};
+ mk('How to play',()=>$('howto').classList.toggle('hidden'));row.append(' · Levels: ');LEVELS.forEach((l,i)=>mk(String(i+1),()=>{score=0;load(i);go()}));
+ row.append(' · ');const a=document.createElement('a');a.href=URL;a.target='_blank';a.rel='noopener';a.textContent='Full screen ↗';a.style.color='#9fb0ff';row.appendChild(a);$('ovb').appendChild(row);return}
+score=0;load(-1);show('How to play',HOWTO,[[`🗓 Daily #${DAYNUM}`,()=>{score=0;load(-1);go()}],...LEVELS.map((l,i)=>[`Level ${i+1}`,()=>{score=0;load(i);go()}])])}
 function show(t,p,btns){$('ovt').textContent=t;$('ovp').innerHTML=p;const b=$('ovb');b.innerHTML='';btns.forEach(([l,f])=>{const e=document.createElement('button');e.textContent=l;e.onclick=f;b.appendChild(e)});$('ov').classList.remove('hidden')}
-function go(){$('ov').classList.add('hidden');state='play';started=false;$('pause').textContent='Pause';clearInterval(timer);timer=setInterval(step,speed);draw()}
+function go(){$('ov').classList.add('hidden');state='play';started=false;setPauseLbl();clearInterval(timer);timer=setInterval(step,speed);draw()}
 function setSpeed(v){speed=+v;localStorage.setItem('wsSpeed',v);document.querySelectorAll('.spd').forEach(e=>e.value=v);if(state==='play'){clearInterval(timer);timer=setInterval(step,speed)}}
-function pause(){if(state==='play'){state='paused';$('pause').textContent='Resume';draw()}else if(state==='paused'){state='play';$('pause').textContent='Pause';draw()}}
+function setPauseLbl(){$('pause').textContent=EMBED?(state==='paused'?'▶':'⏸'):(state==='paused'?'Resume':'Pause')}
+function pause(){if(state==='play'){state='paused';setPauseLbl();draw()}else if(state==='paused'){state='play';setPauseLbl();draw()}}
 function draw(){ctx.clearRect(0,0,cv.width,cv.height);
  for(let y=0;y<H;y++)for(let x=0;x<W;x++)if(wall(x,y)){ctx.fillStyle='#3a4680';ctx.beginPath();ctx.roundRect(x*T+2,y*T+2,T-4,T-4,6);ctx.fill()}
  ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 20px system-ui';
@@ -142,11 +172,18 @@ function draw(){ctx.clearRect(0,0,cv.width,cv.height);
 function turn(x,y){if(state!=='play')return;if(!started){started=true;t0=Date.now();clearInterval(tick);tick=setInterval(()=>{if(state==='play')$('time').textContent=fmt(Date.now()-t0)},500);if(x===-dir.x&&y===-dir.y){snake.reverse();}dir=ndir={x,y};return}if(x===-dir.x&&y===-dir.y)return;ndir={x,y}}
 addEventListener('keydown',e=>{const k={ArrowUp:[0,-1],w:[0,-1],ArrowDown:[0,1],s:[0,1],ArrowLeft:[-1,0],a:[-1,0],ArrowRight:[1,0],d:[1,0]}[e.key.length>1?e.key:e.key.toLowerCase()];
  if(k){e.preventDefault();turn(...k)}else if((e.key===' '||e.key==='Enter')&&state==='menu')go();else if(e.key===' '||e.key.toLowerCase()==='p'){e.preventDefault();pause()}});
+cv.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
 let ts;cv.addEventListener('touchstart',e=>{ts=e.touches[0]},{passive:true});
 cv.addEventListener('touchend',e=>{if(!ts)return;const t=e.changedTouches[0],dx=t.clientX-ts.clientX,dy=t.clientY-ts.clientY;if(Math.max(Math.abs(dx),Math.abs(dy))<20)return;
  Math.abs(dx)>Math.abs(dy)?turn(Math.sign(dx),0):turn(0,Math.sign(dy))});
 document.querySelectorAll('#pad button').forEach(b=>b.onclick=()=>turn(...b.dataset.d.split(',').map(Number)));
 $('pause').onclick=e=>{pause();e.target.blur()};document.querySelectorAll('.spd').forEach(e=>e.onchange=()=>{setSpeed(e.value);e.blur()});setSpeed(speed);
 $('restart').onclick=()=>{score=0;load(li);go()};
+let pausedByClues=false;
+function toggleClues(){const sd=$('side'),o=!sd.classList.contains('open');sd.classList.toggle('open',o);if(o&&state==='play'){pause();pausedByClues=true}else if(!o&&pausedByClues&&state==='paused'){pause();pausedByClues=false}ui()}
+$('cluesBtn').onclick=e=>{toggleClues();e.target.blur()};$('closeClues').onclick=toggleClues;
+let EMBED=false;function applyEmbed(){let top=true;try{top=window.self===window.top}catch(e){top=false}
+ EMBED=!top||innerWidth<=520||innerHeight<=560;document.documentElement.classList.toggle('embed',EMBED);$('restart').textContent=EMBED?'↺':'Restart';setPauseLbl();if(!EMBED)$('side').classList.remove('open')}
+applyEmbed();addEventListener('resize',()=>{const was=EMBED;applyEmbed();if(was!==EMBED){if(state==='menu')menu();else if(L)ui()}});
 menu();if(location.hash==='#demo'){go();turn(1,0);for(let i=0;i<3;i++)step();end(false)}
 </script></body></html>
